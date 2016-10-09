@@ -40,16 +40,11 @@ func (manager channelManager) joinChannelDeafened(discord *discordgo.Session, gu
 }
 
 func (manager channelManager) joinChannel(discord *discordgo.Session, guildId, channelId string, muted, deafened bool) (*channel, error) {
-    fmt.Println("1")
     voice, err := discord.ChannelVoiceJoin(guildId, channelId, muted, deafened)
-    fmt.Println("2")
     if err != nil {
-        fmt.Println("3")
         return nil, err
     }
-    fmt.Println("4")
     ch := &channel{guildId, channelId, *newConnection(voice)}
-    fmt.Println("5")
     manager.connections[channelId] = ch
     fmt.Println("Added " + channelId + " to chanManager")
     return ch, nil
