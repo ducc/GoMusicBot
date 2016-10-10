@@ -62,14 +62,6 @@ func commandHandler(discord *discordgo.Session, message *discordgo.MessageCreate
         return
     }
     content := message.Content
-    if strings.Contains(strings.ToLower(content), "what do") {
-        if !joined {
-            chanManager.joinChannel(discord, "110373943822540800", "117018183365427204", false, true)
-            joined = true
-        }
-        chanManager.connections["117018183365427204"].connection.play(Song{"music/what_do.mp3"})
-        return
-    }
     if len(content) <= len(PREFIX) {
         return
     }
