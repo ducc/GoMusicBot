@@ -1,6 +1,19 @@
 # GoMusicBot
 A simple discord music bot using the [DiscordGo](https://github.com/bwmarrin/discordgo) library.
 
+## Requirements
+- Go compiler
+- GCC compiler
+- ffmpeg.exe
+
+## Install
+1) Clone repository
+2) Put `ffmpeg.exe` in the directory
+3) Create the `config.json` file and place this inside of the directory, following the template below
+4) Create a `music` directory and place music files in here (any supported by ffmpeg)
+5) Run `go build ./src/main` in the cloned directory
+6) Execute `main.exe`
+
 ## Config
 Create a `config.json` file in the project root using this template:
 ```json
@@ -8,3 +21,18 @@ Create a `config.json` file in the project root using this template:
 	"bot_token": "Bot your-bot-token"
 }
 ```
+
+## Commands
+| Command           | Description                                                   |
+|-------------------|---------------------------------------------------------------|
+| music join        | joins your current voice channel (must be in a voice channel) |
+| music play <file> | plays a music file                                            |
+| music stop        | stops playing the current song                                |
+| music leave       | leaves the voice channel                                      |
+|-------------------|---------------------------------------------------------------|
+
+## Support
+This is not for public use. If you don't know GO I do not recommend using this and I will not provide support for that.
+
+## Pull requests & issues
+Go ahead, just bear in mind I've only been doing go for a few days.

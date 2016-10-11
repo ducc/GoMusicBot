@@ -54,8 +54,6 @@ func registerCommands() {
     cmdManager.register("stop", stopCommand)
 }
 
-var joined = false
-
 func commandHandler(discord *discordgo.Session, message *discordgo.MessageCreate) {
     user := message.Author
     if user.ID == botId || user.Bot {
