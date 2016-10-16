@@ -54,13 +54,14 @@ func main() {
 }
 
 func registerCommands() {
-	cmdManager.register("test", testCommand)
+	cmdManager.register("help", helpCommand)
 	cmdManager.register("join", joinCommand)
 	cmdManager.register("leave", leaveCommand)
 	cmdManager.register("play", playCommand)
 	cmdManager.register("stop", stopCommand)
 	cmdManager.register("eval", evalCommand)
     cmdManager.register("info", infoCommand)
+    cmdManager.register("stopbot", stopBotCommand)
 }
 
 func commandHandler(discord *discordgo.Session, message *discordgo.MessageCreate) {

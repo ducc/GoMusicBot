@@ -2,16 +2,19 @@ package main
 
 import (
     "fmt"
+    "os"
     "bytes"
-    "github.com/bwmarrin/discordgo"
-    "time"
-    "runtime"
-    "github.com/dustin/go-humanize"
-    "strconv"
 )
 
-func testCommand(ctx context) {
-	ctx.Reply("Testing, 1 2 3")
+func helpCommand(ctx context) {
+    cmds := cmdManager.commands
+    buffer := bytes.NewBufferString("Commands: ")
+    for key := range cmds {
+        buffer.WriteString(key)
+        buffer.WriteString(", ")
+    }
+    str := buffer.String()
+    ctx.Reply(str[:len(str) - 2])
 }
 
 func joinCommand(ctx context) {
@@ -87,7 +90,15 @@ func playCommand(ctx context) {
 	}
 	var err error
 	if len(ctx.Args) == 2 {
-		err = chanManager.connections[channelId].connection.play(Song{"music/" + ctx.Args[1]})
+		//err = chanManager.connections[channelId].connection.play(Song{"music/" + ctx.Args[1]})
+        youtubeId := ctx.Args[1]
+        url, err := downloadYT(ctx, youtubeId)
+        if err != nil {
+            fmt.Println("err downloading yt vid,", err)
+            return
+        }
+        song := Song{*url}
+        err = chanManager.connections[channelId].connection.play(song)
 	} else {
 		err = chanManager.connections[channelId].connection.play(Song{"music/filthy.m4a"})
 	}
@@ -121,48 +132,11 @@ func stopCommand(ctx context) {
 	ctx.Reply("Stopped playing!")
 }
 
-// credit to github.com/iopred/bruxism for the stats command below
-
-var startTime = time.Now()
-var userString *string
-
-func getDurationString(duration time.Duration) string {
-    return fmt.Sprintf(
-        "%0.2d:%02d:%02d",
-        int(duration.Hours()),
-        int(duration.Minutes())%60,
-        int(duration.Seconds())%60,
-    )
-}
-
-func write(buff *bytes.Buffer, str ...string) {
-    for _, s := range str {
-        buff.WriteString(s)
+func stopBotCommand(ctx context) {
+    if ctx.User.ID != conf.OwnerId {
+        return
     }
-}
-
-func infoCommand(ctx context) {
-    if userString == nil {
-        usr, err := ctx.Discord.User(conf.OwnerId)
-        if err != nil {
-            fmt.Println("error getting user ", conf.OwnerId, err)
-            return
-        }
-        str := usr.Username + "#" + usr.Discriminator
-        userString = &str
-    }
-    stats := runtime.MemStats{}
-    runtime.ReadMemStats(&stats)
-    buffer := bytes.NewBufferString("```")
-    write(buffer, "owner: ", *userString)
-    write(buffer, "\ngo version: ", runtime.Version())
-    write(buffer, "\ndiscordgo version: ", discordgo.VERSION)
-    write(buffer, "\nuptime: ", getDurationString(time.Now().Sub(startTime)))
-    buffer.WriteString(fmt.Sprintf("\nmemory used: %s / %s (%s garbage collected)", humanize.Bytes(stats.Alloc),
-        humanize.Bytes(stats.Sys), humanize.Bytes(stats.TotalAlloc)))
-    write(buffer, "\nconcurrent tasks: ", strconv.Itoa(runtime.NumGoroutine()))
-    write(buffer, "\ncurrent shard: ", strconv.Itoa(ctx.Discord.ShardID))
-    write(buffer, "\nshard count: ", strconv.Itoa(ctx.Discord.ShardCount))
-    buffer.WriteString("```")
-    ctx.Reply(buffer.String())
+    ctx.Reply("Bye :)")
+    ctx.Discord.Close()
+    os.Exit(-1)
 }
