@@ -24,12 +24,6 @@ func getDurationString(duration time.Duration) string {
 	)
 }
 
-func write(buff *bytes.Buffer, str ...string) {
-	for _, s := range str {
-		buff.WriteString(s)
-	}
-}
-
 func infoCommand(ctx context) {
 	if userString == nil {
 		usr, err := ctx.Discord.User(conf.OwnerId)

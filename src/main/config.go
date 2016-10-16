@@ -7,6 +7,7 @@ import (
 )
 
 type config struct {
+	ServiceUrl  string `json:"service_url"`
 	BotToken    string `json:"bot_token"`
 	OwnerId     string `json:"owner_id"`
 	UseSharding bool   `json:"use_sharding"`

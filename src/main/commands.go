@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"fmt"
 	"os"
+	"strconv"
+	"strings"
 )
 
 func helpCommand(ctx context) {
@@ -147,4 +149,27 @@ func stopBotCommand(ctx context) {
 	ctx.Reply("Bye :)")
 	ctx.Discord.Close()
 	os.Exit(-1)
+}
+
+func searchCommand(ctx context) {
+	if len(ctx.Args) < 2 {
+		ctx.Reply("Usage: music search <query>")
+		return
+	}
+	query := strings.Join(ctx.Args[1:], " ")
+	contents, err := searchYoutube(query)
+	if err != nil {
+		ctx.Reply("Something went wrong!")
+		fmt.Println("err searching yt,", err)
+		return
+	}
+    if contents == nil || len(contents) < 1 {
+        ctx.Reply("No results found!")
+        return
+    }
+	buffer := bytes.NewBufferString("Search results:")
+	for index, content := range contents {
+		write(buffer, "\n", strconv.Itoa(index+1), ". ", content.Title, " - ", content.ChannelTitle, " (", content.Id, ")")
+	}
+    ctx.Reply(buffer.String())
 }
