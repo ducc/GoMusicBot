@@ -107,9 +107,9 @@ func playCommand(ctx context) {
 		ctx.Discord.ChannelMessageEdit(textChannel.ID, msg.ID, "Something went wrong! Try a different song.")
 		return
 	}
-	song := Song{vResult.media}
-	ctx.Discord.ChannelMessageEdit(textChannel.ID, msg.ID, "Now playing **"+vResult.title+
-		"** - <https://youtu.be/"+videoId+">!")
+	song := Song{vResult.media, vResult.title}
+	ctx.Discord.ChannelMessageEdit(textChannel.ID, msg.ID, "Now playing **"+song.name+"** - <https://youtu.be/"+
+            videoId+">!")
 	err = con.connection.play(song)
 	if err != nil {
 		ctx.Discord.ChannelMessageEdit(textChannel.ID, msg.ID, "Something went wrong! Try a different song.")
@@ -163,13 +163,13 @@ func searchCommand(ctx context) {
 		fmt.Println("err searching yt,", err)
 		return
 	}
-    if contents == nil || len(contents) < 1 {
-        ctx.Reply("No results found!")
-        return
-    }
+	if contents == nil || len(contents) < 1 {
+		ctx.Reply("No results found!")
+		return
+	}
 	buffer := bytes.NewBufferString("Search results:")
 	for index, content := range contents {
 		write(buffer, "\n", strconv.Itoa(index+1), ". ", content.Title, " - ", content.ChannelTitle, " (", content.Id, ")")
 	}
-    ctx.Reply(buffer.String())
+	ctx.Reply(buffer.String())
 }

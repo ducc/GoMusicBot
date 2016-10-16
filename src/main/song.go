@@ -7,6 +7,7 @@ import (
 
 type Song struct {
 	url string
+    name string
 }
 
 func (song Song) ffmpeg() *exec.Cmd {

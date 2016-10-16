@@ -1,10 +1,10 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
-    "encoding/json"
 )
 
 func buildYtUrl(query string) (*string, error) {
@@ -13,9 +13,9 @@ func buildYtUrl(query string) (*string, error) {
 	if err != nil {
 		return nil, err
 	}
-    params := url.Values{}
-    params.Add("search", query)
-    addr.RawQuery = params.Encode()
+	params := url.Values{}
+	params.Add("search", query)
+	addr.RawQuery = params.Encode()
 	str := addr.String()
 	return &str, nil
 }
@@ -43,7 +43,7 @@ func searchYoutube(query string) ([]content, error) {
 	if err != nil {
 		return nil, err
 	}
-    apiResp := new(apiResponse)
-    json.NewDecoder(resp.Body).Decode(apiResp)
+	apiResp := new(apiResponse)
+	json.NewDecoder(resp.Body).Decode(apiResp)
 	return apiResp.Content, nil
 }

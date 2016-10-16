@@ -1,8 +1,8 @@
 package main
 
 import (
+	"bytes"
 	"github.com/bwmarrin/discordgo"
-    "bytes"
 )
 
 // credit: b1nzy airhorn.solutions
@@ -17,7 +17,7 @@ func getCurrentVoiceChannel(discord *discordgo.Session, user *discordgo.User, gu
 }
 
 func write(buff *bytes.Buffer, str ...string) {
-    for _, s := range str {
-        buff.WriteString(s)
-    }
+	for _, s := range str {
+		buff.WriteString(s)
+	}
 }
