@@ -30,7 +30,7 @@ func joinCommand(ctx context) {
 	}
 	voiceChannel := getCurrentVoiceChannel(ctx.Discord, ctx.User, guild)
 	if voiceChannel == nil {
-        ctx.Reply("Could not find your current voice channel. Are you in a voice channel that the bot can join?")
+		ctx.Reply("Could not find your current voice channel. Are you in a voice channel that the bot can join?")
 		return
 	}
 	channelId := voiceChannel.ID
@@ -80,7 +80,7 @@ func playCommand(ctx context) {
 	}
 	voiceChannel := getCurrentVoiceChannel(ctx.Discord, ctx.User, guild)
 	if voiceChannel == nil {
-        ctx.Reply("Could not find your current voice channel. Are you in a voice channel that the bot can join?")
+		ctx.Reply("Could not find your current voice channel. Are you in a voice channel that the bot can join?")
 		return
 	}
 	channelId := voiceChannel.ID
@@ -89,25 +89,30 @@ func playCommand(ctx context) {
 		return
 	}
 	if len(ctx.Args) != 2 {
-        ctx.Reply("Usage: music play <yt video id>")
-        return
-    }
-    url, err := getYoutubeUrl(ctx.Args[1])
-    if err != nil {
-        ctx.Reply("Something went wrong! Try a different song.")
-        return
-    }
-    song := Song{*url}
-    con := chanManager.connections[channelId]
-    if con.connection.playing {
-        ctx.Reply("Already playing a song in <#" + channelId + ">! To stop playing, use `music stop`. " +
-                "To queue a song, use `music queue <song>`.")
-    }
-    err = con.connection.play(song)
-    ctx.Reply("Now playing <https://www.youtube.com/watch?v=" + *url + ">!")
-    if err != nil {
-        fmt.Println("error playing,", err)
-    }
+		ctx.Reply("Usage: music play <yt video id>")
+		return
+	}
+	con := chanManager.connections[channelId]
+	if con.connection.playing {
+		ctx.Reply("Already playing a song in <#" + channelId + ">! To stop playing, use `music stop`. " +
+			"To queue a song, use `music queue <song>`.")
+		return
+	}
+	videoId := ctx.Args[1]
+	msg := ctx.Reply("Getting song info for `" + videoId + "`...")
+	vResult, err := getYoutubeUrl(videoId)
+	if err != nil {
+		ctx.Discord.ChannelMessageEdit(textChannel.ID, msg.ID, "Something went wrong! Try a different song.")
+		return
+	}
+	song := Song{vResult.media}
+	ctx.Discord.ChannelMessageEdit(textChannel.ID, msg.ID, "Now playing **"+vResult.title+
+		"** - <https://youtu.be/"+videoId+">!")
+	err = con.connection.play(song)
+	if err != nil {
+		ctx.Discord.ChannelMessageEdit(textChannel.ID, msg.ID, "Something went wrong! Try a different song.")
+		fmt.Println("error playing,", err)
+	}
 }
 
 func stopCommand(ctx context) {
@@ -123,12 +128,12 @@ func stopCommand(ctx context) {
 	}
 	voiceChannel := getCurrentVoiceChannel(ctx.Discord, ctx.User, guild)
 	if voiceChannel == nil {
-        ctx.Reply("Could not find your current voice channel. Are you in a voice channel that the bot can join?")
+		ctx.Reply("Could not find your current voice channel. Are you in a voice channel that the bot can join?")
 		return
 	}
 	channelId := voiceChannel.ID
 	if !chanManager.isChannel(channelId) {
-        ctx.Reply("Not currently in the voice channel <#" + channelId + ">. For the bot to join, use `music join`!")
+		ctx.Reply("Not currently in the voice channel <#" + channelId + ">. For the bot to join, use `music join`!")
 		return
 	}
 	chanManager.connections[channelId].connection.stop()
