@@ -7,11 +7,11 @@ import (
 )
 
 type config struct {
-	BotToken   string `json:"bot_token"`
-	OwnerId    string `json:"owner_id"`
-	UseSharding      bool   `json:"use_sharding"`
-	ShardId    int    `json:"shard_id"`
-	ShardCount int    `json:"shard_count"`
+	BotToken    string `json:"bot_token"`
+	OwnerId     string `json:"owner_id"`
+	UseSharding bool   `json:"use_sharding"`
+	ShardId     int    `json:"shard_id"`
+	ShardCount  int    `json:"shard_count"`
 }
 
 func loadConfig(filename string) *config {

@@ -1,19 +1,28 @@
 package main
 
 import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"log"
 	"os/exec"
-    "fmt"
-    "strings"
 )
 
-func downloadYT(ctx context, id string) (*string, error) {
-	cmd := exec.Command("py", "youtube-dl -4 -x --extract-audio --audio-format mp3 --prefer-ffmpeg -o yt\\%(id)s.%(ext)s -- " + id)
-    err := cmd.Run()
-    if err != nil {
-        fmt.Println("error running,", err)
-    }
-    str := strings.Join(cmd.Args, " ")
-    fmt.Println("executed command: " + str)
-	f := "yt\\" + id + ".mp3"
-	return &f, nil
+type response struct {
+	Formats []struct {
+		Url string `json:"url"`
+	} `json:"formats"`
+}
+
+func getYoutubeUrl(id string) string {
+	cmd := exec.Command("youtube-dl", "--skip-download", "--print-json", "https://youtube.com/watch?v=" + id)
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	err := cmd.Run()
+	if err != nil {
+		log.Fatal("Run: ", err)
+	}
+	resp := new(response)
+	json.Unmarshal(out.Bytes(), resp)
+	return resp.Formats[0].Url
 }

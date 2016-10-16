@@ -27,10 +27,10 @@ func main() {
 		fmt.Println("Error creating discord session,", err)
 		return
 	}
-    if conf.UseSharding {
-        discord.ShardID = conf.ShardId
-        discord.ShardCount = conf.ShardCount
-    }
+	if conf.UseSharding {
+		discord.ShardID = conf.ShardId
+		discord.ShardCount = conf.ShardCount
+	}
 	usr, err := discord.User("@me")
 	if err != nil {
 		fmt.Println("Error obtaining account details,", err)
@@ -60,8 +60,8 @@ func registerCommands() {
 	cmdManager.register("play", playCommand)
 	cmdManager.register("stop", stopCommand)
 	cmdManager.register("eval", evalCommand)
-    cmdManager.register("info", infoCommand)
-    cmdManager.register("stopbot", stopBotCommand)
+	cmdManager.register("info", infoCommand)
+	cmdManager.register("stopbot", stopBotCommand)
 }
 
 func commandHandler(discord *discordgo.Session, message *discordgo.MessageCreate) {

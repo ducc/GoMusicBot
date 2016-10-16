@@ -1,20 +1,20 @@
 package main
 
 import (
-    "fmt"
-    "os"
-    "bytes"
+	"bytes"
+	"fmt"
+	"os"
 )
 
 func helpCommand(ctx context) {
-    cmds := cmdManager.commands
-    buffer := bytes.NewBufferString("Commands: ")
-    for key := range cmds {
-        buffer.WriteString(key)
-        buffer.WriteString(", ")
-    }
-    str := buffer.String()
-    ctx.Reply(str[:len(str) - 2])
+	cmds := cmdManager.commands
+	buffer := bytes.NewBufferString("Commands: ")
+	for key := range cmds {
+		buffer.WriteString(key)
+		buffer.WriteString(", ")
+	}
+	str := buffer.String()
+	ctx.Reply(str[:len(str)-2])
 }
 
 func joinCommand(ctx context) {
@@ -90,17 +90,11 @@ func playCommand(ctx context) {
 	}
 	var err error
 	if len(ctx.Args) == 2 {
-		//err = chanManager.connections[channelId].connection.play(Song{"music/" + ctx.Args[1]})
-        youtubeId := ctx.Args[1]
-        url, err := downloadYT(ctx, youtubeId)
-        if err != nil {
-            fmt.Println("err downloading yt vid,", err)
-            return
-        }
-        song := Song{*url}
+        url := getYoutubeUrl(ctx.Args[1])
+        song := Song{url}
         err = chanManager.connections[channelId].connection.play(song)
 	} else {
-		err = chanManager.connections[channelId].connection.play(Song{"music/filthy.m4a"})
+	    err = chanManager.connections[channelId].connection.play(Song{"music/filthy.m4a"})
 	}
 	if err != nil {
 		fmt.Println("error playing,", err)
@@ -133,10 +127,10 @@ func stopCommand(ctx context) {
 }
 
 func stopBotCommand(ctx context) {
-    if ctx.User.ID != conf.OwnerId {
-        return
-    }
-    ctx.Reply("Bye :)")
-    ctx.Discord.Close()
-    os.Exit(-1)
+	if ctx.User.ID != conf.OwnerId {
+		return
+	}
+	ctx.Reply("Bye :)")
+	ctx.Discord.Close()
+	os.Exit(-1)
 }
