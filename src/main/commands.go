@@ -30,16 +30,16 @@ func joinCommand(ctx context) {
 	}
 	voiceChannel := getCurrentVoiceChannel(ctx.Discord, ctx.User, guild)
 	if voiceChannel == nil {
-		fmt.Println("voicechannel is nil")
+        ctx.Reply("Could not find your current voice channel. Are you in a voice channel that the bot can join?")
 		return
 	}
 	channelId := voiceChannel.ID
 	if chanManager.isChannel(channelId) {
-		ctx.Reply("Already in that channel")
+		ctx.Reply("The bot is already in that voice channel! To make the bot leave, use `music leave`!")
 		return
 	}
 	chanManager.joinChannelDeafened(ctx.Discord, guild.ID, channelId)
-	ctx.Reply("Joined channel!")
+	ctx.Reply("Joined the <#" + channelId + "> voice channel!")
 }
 
 func leaveCommand(ctx context) {
@@ -80,25 +80,34 @@ func playCommand(ctx context) {
 	}
 	voiceChannel := getCurrentVoiceChannel(ctx.Discord, ctx.User, guild)
 	if voiceChannel == nil {
-		fmt.Println("voicechannel is nil")
+        ctx.Reply("Could not find your current voice channel. Are you in a voice channel that the bot can join?")
 		return
 	}
 	channelId := voiceChannel.ID
 	if !chanManager.isChannel(channelId) {
-		ctx.Reply("Not in that channel")
+		ctx.Reply("Not currently in the voice channel <#" + channelId + ">. For the bot to join, use `music join`!")
 		return
 	}
-	var err error
-	if len(ctx.Args) == 2 {
-        url := getYoutubeUrl(ctx.Args[1])
-        song := Song{url}
-        err = chanManager.connections[channelId].connection.play(song)
-	} else {
-	    err = chanManager.connections[channelId].connection.play(Song{"music/filthy.m4a"})
-	}
-	if err != nil {
-		fmt.Println("error playing,", err)
-	}
+	if len(ctx.Args) != 2 {
+        ctx.Reply("Usage: music play <yt video id>")
+        return
+    }
+    url, err := getYoutubeUrl(ctx.Args[1])
+    if err != nil {
+        ctx.Reply("Something went wrong! Try a different song.")
+        return
+    }
+    song := Song{*url}
+    con := chanManager.connections[channelId]
+    if con.connection.playing {
+        ctx.Reply("Already playing a song in <#" + channelId + ">! To stop playing, use `music stop`. " +
+                "To queue a song, use `music queue <song>`.")
+    }
+    err = con.connection.play(song)
+    ctx.Reply("Now playing <https://www.youtube.com/watch?v=" + *url + ">!")
+    if err != nil {
+        fmt.Println("error playing,", err)
+    }
 }
 
 func stopCommand(ctx context) {
@@ -114,16 +123,16 @@ func stopCommand(ctx context) {
 	}
 	voiceChannel := getCurrentVoiceChannel(ctx.Discord, ctx.User, guild)
 	if voiceChannel == nil {
-		fmt.Println("voicechannel is nil")
+        ctx.Reply("Could not find your current voice channel. Are you in a voice channel that the bot can join?")
 		return
 	}
 	channelId := voiceChannel.ID
 	if !chanManager.isChannel(channelId) {
-		ctx.Reply("Not in that channel")
+        ctx.Reply("Not currently in the voice channel <#" + channelId + ">. For the bot to join, use `music join`!")
 		return
 	}
 	chanManager.connections[channelId].connection.stop()
-	ctx.Reply("Stopped playing!")
+	ctx.Reply("Stopped playing music in <#" + channelId + ">!")
 }
 
 func stopBotCommand(ctx context) {

@@ -3,8 +3,8 @@ package main
 import (
 	"bytes"
 	"encoding/json"
-	"log"
 	"os/exec"
+    "fmt"
 )
 
 type response struct {
@@ -13,15 +13,17 @@ type response struct {
 	} `json:"formats"`
 }
 
-func getYoutubeUrl(id string) string {
+func getYoutubeUrl(id string) (*string, error) {
 	cmd := exec.Command("youtube-dl", "--skip-download", "--print-json", "https://youtube.com/watch?v=" + id)
 	var out bytes.Buffer
 	cmd.Stdout = &out
 	err := cmd.Run()
 	if err != nil {
-		log.Fatal("Run: ", err)
+		fmt.Println("Error getting youtube info,", err)
+        return nil, err
 	}
 	resp := new(response)
 	json.Unmarshal(out.Bytes(), resp)
-	return resp.Formats[0].Url
+    url := resp.Formats[0].Url
+	return &url, nil
 }
