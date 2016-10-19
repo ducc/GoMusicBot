@@ -15,12 +15,13 @@ type Context struct {
 	Args         []string
 
 	// dependency injection?
+	Conf       *Config
 	CmdHandler *CommandHandler
 	Sessions   *SessionManager
 }
 
 func NewContext(discord *discordgo.Session, guild *discordgo.Guild, textChannel *discordgo.Channel,
-	user *discordgo.User, message *discordgo.MessageCreate, cmdHandler *CommandHandler,
+	user *discordgo.User, message *discordgo.MessageCreate, conf *Config, cmdHandler *CommandHandler,
 	sessions *SessionManager) *Context {
 	ctx := new(Context)
 	ctx.Discord = discord
@@ -28,6 +29,7 @@ func NewContext(discord *discordgo.Session, guild *discordgo.Guild, textChannel 
 	ctx.TextChannel = textChannel
 	ctx.User = user
 	ctx.Message = message
+    ctx.Conf = conf
 	ctx.CmdHandler = cmdHandler
 	ctx.Sessions = sessions
 	return ctx

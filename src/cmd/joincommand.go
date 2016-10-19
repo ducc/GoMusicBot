@@ -5,13 +5,12 @@ import (
 )
 
 func JoinCommand(ctx framework.Context) {
-	vc := ctx.VoiceChannel
-	if vc != nil {
+	if ctx.Sessions.GetByGuild(ctx.Guild.ID) != nil {
 		ctx.Reply("Already connected! Use `music leave` for the bot to disconnect.")
 		return
 	}
-	vc = ctx.GetVoiceChannel()
-	_, err := ctx.Sessions.Join(ctx.Discord, ctx.Guild.ID, vc.ID, framework.JoinProperties{
+	vc := ctx.GetVoiceChannel()
+	sess, err := ctx.Sessions.Join(ctx.Discord, ctx.Guild.ID, vc.ID, framework.JoinProperties{
 		Muted:    false,
 		Deafened: true,
 	})
@@ -19,5 +18,5 @@ func JoinCommand(ctx framework.Context) {
 		ctx.Reply("An error occured!")
 		return
 	}
-	ctx.Reply("ok :)")
+	ctx.Reply("Joined <#" + sess.ChannelId + ">!")
 }

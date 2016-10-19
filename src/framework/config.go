@@ -1,4 +1,4 @@
-package main
+package framework
 
 import (
 	"encoding/json"
@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 )
 
-type config struct {
+type Config struct {
 	ServiceUrl  string `json:"service_url"`
 	BotToken    string `json:"bot_token"`
 	OwnerId     string `json:"owner_id"`
@@ -15,13 +15,13 @@ type config struct {
 	ShardCount  int    `json:"shard_count"`
 }
 
-func loadConfig(filename string) *config {
+func LoadConfig(filename string) *Config {
 	body, err := ioutil.ReadFile(filename)
 	if err != nil {
 		fmt.Println("error loading config,", err)
 		return nil
 	}
-	var conf config
+	var conf Config
 	json.Unmarshal(body, &conf)
 	return &conf
 }

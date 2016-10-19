@@ -8,7 +8,7 @@ import (
 type (
 	Session struct {
 		Queue              SongQueue
-		guildId, channelId string
+		guildId, ChannelId string
 		connection         voice.Connection
 	}
 
@@ -26,7 +26,7 @@ func newSession(guildId, channelId string, connection voice.Connection) *Session
 	session := new(Session)
 	session.Queue = *newSongQueue()
 	session.guildId = guildId
-	session.channelId = channelId
+	session.ChannelId = channelId
 	session.connection = connection
 	return session
 }
@@ -63,5 +63,5 @@ func (manager SessionManager) Join(discord *discordgo.Session, guildId, channelI
 func (manager SessionManager) Leave(discord *discordgo.Session, session Session) {
 	session.connection.Stop()
 	session.connection.Disconnect()
-	delete(manager.sessions, session.channelId)
+	delete(manager.sessions, session.ChannelId)
 }

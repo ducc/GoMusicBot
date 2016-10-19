@@ -13,14 +13,14 @@ const (
 )
 
 var (
-	conf       *config
+	conf       *framework.Config
 	CmdHandler *framework.CommandHandler
 	Sessions   *framework.SessionManager
 	botId      string
 )
 
 func main() {
-	conf = loadConfig("config.json")
+	conf = framework.LoadConfig("config.json")
 	CmdHandler = framework.NewCommandHandler()
 	registerCommands()
 	Sessions = framework.NewSessionManager()
@@ -88,12 +88,15 @@ func commandHandler(discord *discordgo.Session, message *discordgo.MessageCreate
 		fmt.Println("Error getting guild,", err)
 		return
 	}
-	ctx := framework.NewContext(discord, guild, channel, user, message, CmdHandler, Sessions)
+	ctx := framework.NewContext(discord, guild, channel, user, message, conf, CmdHandler, Sessions)
+    ctx.Args = args[1:]
 	c := *command
 	c(*ctx)
 }
 
 func registerCommands() {
 	CmdHandler.Register("help", cmd.HelpCommand)
-	CmdHandler.Register("join", cmd.JoinCommand)
+    CmdHandler.Register("admin", cmd.AdminCommand)
+    CmdHandler.Register("join", cmd.JoinCommand)
+    CmdHandler.Register("leave", cmd.LeaveCommand)
 }
