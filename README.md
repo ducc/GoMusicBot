@@ -36,10 +36,10 @@ Create a `config.json` file in the project root using this template:
 |-------------------|---------------------------------------------------------------|
 | music help        | shows all available commands                                  |
 | music join        | joins your current voice channel (must be in a voice channel) |
-| music play <file> | plays a music file                                            |
+| music play [file] | plays a music file                                            |
 | music stop        | stops playing the current song                                |
 | music leave       | leaves the voice channel                                      |
-| music eval <code> | runs javascript (bot owner only)                              |
+| music eval [code] | runs javascript (bot owner only)                              |
 | music info        | shows bot info and statistics                                 |
 | music stopbot     | stops the bot (bot owner only)                                |
 
