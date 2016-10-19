@@ -1,4 +1,4 @@
-package main
+package oldmain
 
 import (
 	"os/exec"
@@ -6,8 +6,8 @@ import (
 )
 
 type Song struct {
-	url string
-    name string
+	url  string
+	name string
 }
 
 func (song Song) ffmpeg() *exec.Cmd {

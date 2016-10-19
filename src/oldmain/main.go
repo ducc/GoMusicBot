@@ -1,8 +1,6 @@
-package main
+package oldmain
 
 import (
-	"../cmd"
-	"../framework"
 	"fmt"
 	"github.com/bwmarrin/discordgo"
 	"strings"
@@ -13,17 +11,17 @@ const (
 )
 
 var (
-	conf       *config
-	CmdHandler *framework.CommandHandler
-	Sessions   *framework.SessionManager
-	botId      string
+	cmdManager  *commandManager
+	chanManager *channelManager
+	conf        *config
+	botId       string
 )
 
 func main() {
-	conf = loadConfig("config.json")
-	CmdHandler = framework.NewCommandHandler()
+	cmdManager = newCommandManager()
 	registerCommands()
-	Sessions = framework.NewSessionManager()
+	chanManager = newChannelManager()
+	conf = loadConfig("config.json")
 	discord, err := discordgo.New(conf.BotToken)
 	if err != nil {
 		fmt.Println("Error creating discord session,", err)
@@ -55,13 +53,24 @@ func main() {
 	<-make(chan struct{})
 }
 
+func registerCommands() {
+	cmdManager.register("help", helpCommand)
+	cmdManager.register("join", joinCommand)
+	cmdManager.register("leave", leaveCommand)
+	cmdManager.register("play", playCommand)
+	cmdManager.register("search", searchCommand)
+	cmdManager.register("stop", stopCommand)
+	cmdManager.register("eval", evalCommand)
+	cmdManager.register("info", infoCommand)
+	cmdManager.register("stopbot", stopBotCommand)
+}
+
 func commandHandler(discord *discordgo.Session, message *discordgo.MessageCreate) {
 	user := message.Author
 	if user.ID == botId || user.Bot {
 		return
 	}
 	content := message.Content
-	fmt.Println(content)
 	if len(content) <= len(PREFIX) {
 		return
 	}
@@ -74,26 +83,9 @@ func commandHandler(discord *discordgo.Session, message *discordgo.MessageCreate
 	}
 	args := strings.Fields(content)
 	name := strings.ToLower(args[0])
-	command, found := CmdHandler.Get(name)
-	if !found {
+	if !cmdManager.isCommand(name) {
 		return
 	}
-	channel, err := discord.State.Channel(message.ChannelID)
-	if err != nil {
-		fmt.Println("Error getting channel,", err)
-		return
-	}
-	guild, err := discord.State.Guild(channel.GuildID)
-	if err != nil {
-		fmt.Println("Error getting guild,", err)
-		return
-	}
-	ctx := framework.NewContext(discord, guild, channel, user, message, CmdHandler, Sessions)
-	c := *command
-	c(*ctx)
-}
-
-func registerCommands() {
-	CmdHandler.Register("help", cmd.HelpCommand)
-	CmdHandler.Register("join", cmd.JoinCommand)
+	ctx := newContext(discord, message, args)
+	cmdManager.commands[name](*ctx)
 }

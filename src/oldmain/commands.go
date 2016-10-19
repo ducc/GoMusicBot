@@ -1,4 +1,4 @@
-package main
+package oldmain
 
 import (
 	"bytes"
@@ -109,7 +109,7 @@ func playCommand(ctx context) {
 	}
 	song := Song{vResult.media, vResult.title}
 	ctx.Discord.ChannelMessageEdit(textChannel.ID, msg.ID, "Now playing **"+song.name+"** - <https://youtu.be/"+
-            videoId+">!")
+		videoId+">!")
 	err = con.connection.play(song)
 	if err != nil {
 		ctx.Discord.ChannelMessageEdit(textChannel.ID, msg.ID, "Something went wrong! Try a different song.")

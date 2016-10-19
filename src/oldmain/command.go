@@ -1,4 +1,4 @@
-package main
+package oldmain
 
 type commandManager struct {
 	commands map[string]func(context)

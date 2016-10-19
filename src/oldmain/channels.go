@@ -1,4 +1,4 @@
-package main
+package oldmain
 
 import (
 	"fmt"
@@ -20,10 +20,8 @@ func newChannelManager() *channelManager {
 }
 
 func (manager channelManager) isChannel(channelId string) bool {
-	if _, ok := manager.connections[channelId]; ok {
-		return true
-	}
-	return false
+	_, ok := manager.connections[channelId]
+	return ok
 }
 
 func (manager channelManager) getChannelByGuild(guildId string) *channel {
