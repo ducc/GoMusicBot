@@ -106,4 +106,5 @@ func registerCommands() {
     CmdHandler.Register("queue", cmd.QueueCommand)
     CmdHandler.Register("eval", cmd.EvalCommand)
     CmdHandler.Register("debug", cmd.DebugCommand)
+    CmdHandler.Register("clear", cmd.ClearCommand)
 }

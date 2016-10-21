@@ -4,7 +4,14 @@ import (
     "../framework"
     "bytes"
     "strconv"
+    "fmt"
 )
+
+const num_format = "%03d"
+
+func formatNum(input int) string {
+    return fmt.Sprintf(num_format, input)
+}
 
 func QueueCommand(ctx framework.Context) {
     sess := ctx.Sessions.GetByGuild(ctx.Guild.ID)
@@ -14,9 +21,13 @@ func QueueCommand(ctx framework.Context) {
     }
     queue := sess.Queue
     q := queue.Get()
+    if len(q) == 0 {
+        ctx.Reply("Song queue is empty! Add a song with `music add`.")
+        return
+    }
     buff := bytes.NewBufferString("__Song queue (" + strconv.Itoa(len(q)) + " songs)__")
     for index, song := range q {
-        buff.WriteString("\n`" + strconv.Itoa(index + 1) + "` " + song.Title)
+        buff.WriteString("\n`" + formatNum(index + 1) + "` " + song.Title)
     }
     ctx.Reply(buff.String())
 }
