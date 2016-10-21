@@ -7,13 +7,13 @@ import (
 
 type (
 	Session struct {
-		Queue              SongQueue
+		Queue              *SongQueue
 		guildId, ChannelId string
-		connection         voice.Connection
+		connection         *voice.Connection
 	}
 
 	SessionManager struct {
-		sessions map[string]Session
+		sessions map[string]*Session
 	}
 
 	JoinProperties struct {
@@ -22,23 +22,31 @@ type (
 	}
 )
 
-func newSession(guildId, channelId string, connection voice.Connection) *Session {
+func newSession(guildId, channelId string, connection *voice.Connection) *Session {
 	session := new(Session)
-	session.Queue = *newSongQueue()
+	session.Queue = newSongQueue()
 	session.guildId = guildId
 	session.ChannelId = channelId
 	session.connection = connection
 	return session
 }
 
+func (sess Session) Play(song Song) error {
+	return sess.connection.Play(song.Ffmpeg())
+}
+
+func (sess *Session) Stop() {
+	sess.connection.Stop()
+}
+
 func NewSessionManager() *SessionManager {
-	return &SessionManager{make(map[string]Session)}
+	return &SessionManager{make(map[string]*Session)}
 }
 
 func (manager SessionManager) GetByGuild(guildId string) *Session {
 	for _, sess := range manager.sessions {
 		if sess.guildId == guildId {
-			return &sess
+			return sess
 		}
 	}
 	return nil
@@ -46,7 +54,7 @@ func (manager SessionManager) GetByGuild(guildId string) *Session {
 
 func (manager SessionManager) GetByChannel(channelId string) (*Session, bool) {
 	sess, found := manager.sessions[channelId]
-	return &sess, found
+	return sess, found
 }
 
 func (manager SessionManager) Join(discord *discordgo.Session, guildId, channelId string,
@@ -55,8 +63,8 @@ func (manager SessionManager) Join(discord *discordgo.Session, guildId, channelI
 	if err != nil {
 		return nil, err
 	}
-	sess := newSession(guildId, channelId, *voice.NewConnection(vc))
-	manager.sessions[channelId] = *sess
+	sess := newSession(guildId, channelId, voice.NewConnection(vc))
+	manager.sessions[channelId] = sess
 	return sess, nil
 }
 

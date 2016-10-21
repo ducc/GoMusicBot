@@ -61,7 +61,6 @@ func commandHandler(discord *discordgo.Session, message *discordgo.MessageCreate
 		return
 	}
 	content := message.Content
-	fmt.Println(content)
 	if len(content) <= len(PREFIX) {
 		return
 	}
@@ -89,14 +88,22 @@ func commandHandler(discord *discordgo.Session, message *discordgo.MessageCreate
 		return
 	}
 	ctx := framework.NewContext(discord, guild, channel, user, message, conf, CmdHandler, Sessions)
-    ctx.Args = args[1:]
+	ctx.Args = args[1:]
 	c := *command
 	c(*ctx)
 }
 
 func registerCommands() {
 	CmdHandler.Register("help", cmd.HelpCommand)
-    CmdHandler.Register("admin", cmd.AdminCommand)
-    CmdHandler.Register("join", cmd.JoinCommand)
-    CmdHandler.Register("leave", cmd.LeaveCommand)
+	CmdHandler.Register("admin", cmd.AdminCommand)
+	CmdHandler.Register("join", cmd.JoinCommand)
+	CmdHandler.Register("leave", cmd.LeaveCommand)
+	CmdHandler.Register("play", cmd.PlayCommand)
+	CmdHandler.Register("stop", cmd.StopCommand)
+    CmdHandler.Register("info", cmd.InfoCommand)
+    CmdHandler.Register("add", cmd.AddCommand)
+    CmdHandler.Register("skip", cmd.SkipCommand)
+    CmdHandler.Register("queue", cmd.QueueCommand)
+    CmdHandler.Register("eval", cmd.EvalCommand)
+    CmdHandler.Register("debug", cmd.DebugCommand)
 }

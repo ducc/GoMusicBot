@@ -25,4 +25,7 @@ func (handler CommandHandler) Get(name string) (*Command, bool) {
 
 func (handler CommandHandler) Register(name string, command Command) {
 	handler.cmds[name] = command
+	if len(name) > 1 {
+		handler.cmds[name[:1]] = command
+	}
 }

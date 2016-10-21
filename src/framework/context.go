@@ -29,7 +29,7 @@ func NewContext(discord *discordgo.Session, guild *discordgo.Guild, textChannel 
 	ctx.TextChannel = textChannel
 	ctx.User = user
 	ctx.Message = message
-    ctx.Conf = conf
+	ctx.Conf = conf
 	ctx.CmdHandler = cmdHandler
 	ctx.Sessions = sessions
 	return ctx

@@ -1,4 +1,4 @@
-package oldmain
+package media
 
 import (
 	"bytes"
@@ -14,12 +14,12 @@ type response struct {
 	Title string `json:"title"`
 }
 
-type videoResult struct {
-	media string
-	title string
+type VideoResult struct {
+	Media string
+	Title string
 }
 
-func getYoutubeUrl(id string) (*videoResult, error) {
+func Youtube(id string) (*VideoResult, error) {
 	cmd := exec.Command("youtube-dl", "--skip-download", "--print-json", "https://youtube.com/watch?v="+id)
 	var out bytes.Buffer
 	cmd.Stdout = &out
@@ -31,5 +31,5 @@ func getYoutubeUrl(id string) (*videoResult, error) {
 	resp := new(response)
 	json.Unmarshal(out.Bytes(), resp)
 	url := resp.Formats[0].Url
-	return &videoResult{url, resp.Title}, nil
+	return &VideoResult{url, resp.Title}, nil
 }

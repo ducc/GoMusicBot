@@ -18,6 +18,10 @@ const (
 	MAX_BYTES  int = (FRAME_SIZE * 2) * 2
 )
 
+/*
+this shit is messy and i don't fully understand it yet credit to github.com/bwmarrin's voice example for the base code
+ */
+
 func (connection *Connection) sendPCM(voice *discordgo.VoiceConnection, pcm <-chan []int16) {
 	connection.lock.Lock()
 	if connection.sendpcm || pcm == nil {
@@ -53,7 +57,7 @@ func (connection *Connection) sendPCM(voice *discordgo.VoiceConnection, pcm <-ch
 	}
 }
 
-func (connection *Connection) play(ffmpeg exec.Cmd) error {
+func (connection *Connection) Play(ffmpeg *exec.Cmd) error {
 	if connection.playing {
 		return errors.New("song already playing")
 	}
@@ -80,6 +84,7 @@ func (connection *Connection) play(ffmpeg exec.Cmd) error {
 	for {
 		if connection.stopRunning {
 			ffmpeg.Process.Kill()
+            break
 		}
 		audioBuffer := make([]int16, FRAME_SIZE*CHANNELS)
 		err = binary.Read(buffer, binary.LittleEndian, &audioBuffer)
@@ -92,4 +97,9 @@ func (connection *Connection) play(ffmpeg exec.Cmd) error {
 		connection.send <- audioBuffer
 	}
 	return nil
+}
+
+func (connection *Connection) Stop() {
+	connection.stopRunning = true
+	connection.playing = false
 }

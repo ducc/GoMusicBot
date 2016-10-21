@@ -19,11 +19,6 @@ func NewConnection(voiceConnection *discordgo.VoiceConnection) *Connection {
 	connection.voiceConnection = voiceConnection
 	return connection
 }
-
-func (connection *Connection) Stop() {
-	connection.stopRunning = true
-	connection.playing = false
-}
 func (connection Connection) Disconnect() {
 	connection.voiceConnection.Disconnect()
 }

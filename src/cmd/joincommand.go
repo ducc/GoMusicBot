@@ -10,6 +10,10 @@ func JoinCommand(ctx framework.Context) {
 		return
 	}
 	vc := ctx.GetVoiceChannel()
+	if vc == nil {
+		ctx.Reply("You must be in a voice channel to use the bot!")
+		return
+	}
 	sess, err := ctx.Sessions.Join(ctx.Discord, ctx.Guild.ID, vc.ID, framework.JoinProperties{
 		Muted:    false,
 		Deafened: true,
