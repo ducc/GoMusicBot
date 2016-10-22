@@ -18,6 +18,7 @@ func EvalCommand(ctx framework.Context) {
     vm.Set("ctx", ctx)
     vm.Set("getGuild", Guild)
     vm.Set("getEmojis", Emojis)
+    vm.Set("format", Format)
     val, err := vm.Run(js)
     if err != nil {
         ctx.Reply(err.Error())
@@ -27,6 +28,10 @@ func EvalCommand(ctx framework.Context) {
         return
     }
     ctx.Reply("`" + val.String() + "`")
+}
+
+func Format(input string, entities []interface{}) string {
+    return fmt.Sprintf(input, entities...)
 }
 
 func Guild(ctx framework.Context, id string) *discordgo.Guild {

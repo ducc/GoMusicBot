@@ -41,10 +41,9 @@ func main() {
 	botId = usr.ID
 	discord.AddHandler(commandHandler)
 	discord.AddHandler(func(discord *discordgo.Session, ready *discordgo.Ready) {
-		fmt.Println("Ready")
 		discord.UpdateStatus(0, "boyyyy")
 		guilds := discord.State.Guilds
-		fmt.Println("num guilds:", len(guilds))
+		fmt.Println("Ready with", len(guilds), "guilds.")
 	})
 	err = discord.Open()
 	if err != nil {

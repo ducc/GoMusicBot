@@ -14,6 +14,10 @@ func formatNum(input int) string {
 }
 
 func QueueCommand(ctx framework.Context) {
+    if len(ctx.Args) > 0 {
+        AddCommand(ctx)
+        return
+    }
     sess := ctx.Sessions.GetByGuild(ctx.Guild.ID)
     if sess == nil {
         ctx.Reply("Not in a voice channel! To make the bot join one, use `music join`.")

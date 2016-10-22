@@ -1,4 +1,4 @@
-package voice
+package framework
 
 import (
 	"github.com/bwmarrin/discordgo"

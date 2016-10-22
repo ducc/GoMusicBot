@@ -5,7 +5,42 @@ import (
     "../media"
     "fmt"
     "strconv"
+    "strings"
+    "net/url"
 )
+
+const (
+    TYPE_UNKNOWN = 0
+    TYPE_YOUTUBE = 1
+    TYPE_SOUNDCLOUD = 2
+)
+
+type identifyResult struct {
+    t uint8
+    v string
+}
+
+func cont(input, check string) bool {
+    return strings.Contains(input, check)
+}
+
+func identifyInput(input string) *identifyResult {
+    lower := strings.ToLower(input)
+    if cont(lower, "youtube.com") {
+        u, err := url.Parse(input)
+        if err != nil {
+            fmt.Println("oops parsing inp", err)
+            return nil
+        }
+        id := u.Query().Get("v")
+        return &identifyResult{TYPE_YOUTUBE, id}
+    } else if cont(lower, "youtu.be") {
+        ind := strings.Index(input, "be/") + 3
+        return &identifyResult{TYPE_YOUTUBE, input[ind:]}
+    } else {
+        return &identifyResult{TYPE_UNKNOWN, input}
+    }
+}
 
 func loadYTSong(id string) (*framework.Song, error) {
     result, err := media.Youtube(id)
@@ -28,7 +63,29 @@ func AddCommand(ctx framework.Context) {
     }
     msg := ctx.Reply("Adding songs to queue...")
     for _, arg := range ctx.Args {
-        song, err := loadYTSong(arg)
+        identified := identifyInput(arg)
+        if identified == nil {
+            ctx.Reply("Could not identify input `" + arg + "`.")
+            continue
+        }
+        id := identified.v
+        var song *framework.Song
+        var err error
+        switch identified.t {
+        case TYPE_UNKNOWN:
+            // try youtube xd
+            song, err = loadYTSong(id)
+            break
+        case TYPE_YOUTUBE:
+            song, err = loadYTSong(id)
+            break
+        case TYPE_SOUNDCLOUD:
+            ctx.Reply("Soundcloud not yet supported.")
+            break
+        default:
+            ctx.Reply(fmt.Sprintf("Invalid type `%d`.", identified.t))
+            return
+        }
         if err != nil {
             ctx.Discord.ChannelMessageEdit(ctx.TextChannel.ID, msg.ID, "An error occured")
             fmt.Println("Error loading yt song,", err)
@@ -38,5 +95,5 @@ func AddCommand(ctx framework.Context) {
         ctx.Discord.ChannelMessageEdit(ctx.TextChannel.ID, msg.ID, "Added `" + song.Title + "` to the song queue.")
     }
     ctx.Discord.ChannelMessageEdit(ctx.TextChannel.ID, msg.ID, "Added " + strconv.Itoa(len(ctx.Args)) +
-            " songs to the queue. Use `music play` to start playing the songs!")
+            " songs to the queue. Use `music play` to start playing the songs! To see the song queue, use `music queue`.")
 }

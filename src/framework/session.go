@@ -1,7 +1,6 @@
 package framework
 
 import (
-	"../voice"
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -9,7 +8,7 @@ type (
 	Session struct {
 		Queue              *SongQueue
 		guildId, ChannelId string
-		connection         *voice.Connection
+		connection         *Connection
 	}
 
 	SessionManager struct {
@@ -22,7 +21,7 @@ type (
 	}
 )
 
-func newSession(guildId, channelId string, connection *voice.Connection) *Session {
+func newSession(guildId, channelId string, connection *Connection) *Session {
 	session := new(Session)
 	session.Queue = newSongQueue()
 	session.guildId = guildId
@@ -63,7 +62,7 @@ func (manager SessionManager) Join(discord *discordgo.Session, guildId, channelI
 	if err != nil {
 		return nil, err
 	}
-	sess := newSession(guildId, channelId, voice.NewConnection(vc))
+	sess := newSession(guildId, channelId, NewConnection(vc))
 	manager.sessions[channelId] = sess
 	return sess, nil
 }

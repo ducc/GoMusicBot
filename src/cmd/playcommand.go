@@ -15,5 +15,7 @@ func PlayCommand(ctx framework.Context) {
         ctx.Reply("Queue is empty! Add songs with `music add`.")
         return
     }
-    go queue.Start(ctx, sess)
+    go queue.Start(sess, func(msg string) {
+        ctx.Reply(msg)
+    })
 }
