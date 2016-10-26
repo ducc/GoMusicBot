@@ -2,6 +2,7 @@ package framework
 
 type SongQueue struct {
 	list    []Song
+	current *Song
 	running bool
 }
 
@@ -20,12 +21,14 @@ func (queue SongQueue) HasNext() bool {
 func (queue *SongQueue) Next() Song {
 	song := queue.list[0]
 	queue.list = queue.list[1:]
+	queue.current = &song
 	return song
 }
 
 func (queue *SongQueue) Clear() {
 	queue.list = make([]Song, 0)
 	queue.running = false
+	queue.current = nil
 }
 
 func (queue *SongQueue) Start(sess *Session, callback func(string)) {
@@ -36,10 +39,14 @@ func (queue *SongQueue) Start(sess *Session, callback func(string)) {
 		sess.Play(song)
 	}
 	if !queue.running {
-        callback("Stopped playing.")
+		callback("Stopped playing.")
 	} else {
-        callback("Finished queue.")
+		callback("Finished queue.")
 	}
+}
+
+func (queue *SongQueue) Current() *Song {
+	return queue.current
 }
 
 func newSongQueue() *SongQueue {

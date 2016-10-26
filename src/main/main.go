@@ -16,6 +16,7 @@ var (
 	conf       *framework.Config
 	CmdHandler *framework.CommandHandler
 	Sessions   *framework.SessionManager
+	youtube    *framework.Youtube
 	botId      string
 )
 
@@ -24,6 +25,7 @@ func main() {
 	CmdHandler = framework.NewCommandHandler()
 	registerCommands()
 	Sessions = framework.NewSessionManager()
+	youtube = &framework.Youtube{Conf: conf}
 	discord, err := discordgo.New(conf.BotToken)
 	if err != nil {
 		fmt.Println("Error creating discord session,", err)
@@ -86,7 +88,7 @@ func commandHandler(discord *discordgo.Session, message *discordgo.MessageCreate
 		fmt.Println("Error getting guild,", err)
 		return
 	}
-	ctx := framework.NewContext(discord, guild, channel, user, message, conf, CmdHandler, Sessions)
+	ctx := framework.NewContext(discord, guild, channel, user, message, conf, CmdHandler, Sessions, youtube)
 	ctx.Args = args[1:]
 	c := *command
 	c(*ctx)
@@ -99,11 +101,14 @@ func registerCommands() {
 	CmdHandler.Register("leave", cmd.LeaveCommand)
 	CmdHandler.Register("play", cmd.PlayCommand)
 	CmdHandler.Register("stop", cmd.StopCommand)
-    CmdHandler.Register("info", cmd.InfoCommand)
-    CmdHandler.Register("add", cmd.AddCommand)
-    CmdHandler.Register("skip", cmd.SkipCommand)
-    CmdHandler.Register("queue", cmd.QueueCommand)
-    CmdHandler.Register("eval", cmd.EvalCommand)
-    CmdHandler.Register("debug", cmd.DebugCommand)
-    CmdHandler.Register("clear", cmd.ClearCommand)
+	CmdHandler.Register("info", cmd.InfoCommand)
+	CmdHandler.Register("add", cmd.AddCommand)
+	CmdHandler.Register("skip", cmd.SkipCommand)
+	CmdHandler.Register("queue", cmd.QueueCommand)
+	CmdHandler.Register("eval", cmd.EvalCommand)
+	CmdHandler.Register("debug", cmd.DebugCommand)
+	CmdHandler.Register("clear", cmd.ClearCommand)
+	CmdHandler.Register("current", cmd.CurrentCommand)
+	CmdHandler.Register("youtube", cmd.YoutubeCommand)
+	CmdHandler.Register("pick", cmd.PickCommand)
 }

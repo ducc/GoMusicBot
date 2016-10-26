@@ -10,8 +10,8 @@ func StopCommand(ctx framework.Context) {
 		ctx.Reply("Not in a voice channel! To make the bot join one, use `music join`.")
 		return
 	}
-    if sess.Queue.HasNext() {
-        sess.Queue.Clear()
-    }
+	if sess.Queue.HasNext() {
+		sess.Queue.Clear()
+	}
 	sess.Stop()
 }

@@ -20,7 +20,7 @@ const (
 
 /*
 this shit is messy and i don't fully understand it yet credit to github.com/bwmarrin's voice example for the base code
- */
+*/
 
 func (connection *Connection) sendPCM(voice *discordgo.VoiceConnection, pcm <-chan []int16) {
 	connection.lock.Lock()
@@ -84,7 +84,7 @@ func (connection *Connection) Play(ffmpeg *exec.Cmd) error {
 	for {
 		if connection.stopRunning {
 			ffmpeg.Process.Kill()
-            break
+			break
 		}
 		audioBuffer := make([]int16, FRAME_SIZE*CHANNELS)
 		err = binary.Read(buffer, binary.LittleEndian, &audioBuffer)
