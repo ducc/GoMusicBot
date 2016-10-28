@@ -110,5 +110,7 @@ func registerCommands() {
 	CmdHandler.Register("clear", cmd.ClearCommand)
 	CmdHandler.Register("current", cmd.CurrentCommand)
 	CmdHandler.Register("youtube", cmd.YoutubeCommand)
-	CmdHandler.Register("pick", cmd.PickCommand)
+    CmdHandler.Register("shuffle", cmd.ShuffleCommand)
+    CmdHandler.Register("pausequeue", cmd.PauseCommand)
+    CmdHandler.Register("pick", cmd.PickCommand)
 }

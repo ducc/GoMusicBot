@@ -56,7 +56,7 @@ func (manager SessionManager) GetByChannel(channelId string) (*Session, bool) {
 	return sess, found
 }
 
-func (manager SessionManager) Join(discord *discordgo.Session, guildId, channelId string,
+func (manager *SessionManager) Join(discord *discordgo.Session, guildId, channelId string,
 	properties JoinProperties) (*Session, error) {
 	vc, err := discord.ChannelVoiceJoin(guildId, channelId, properties.Muted, properties.Deafened)
 	if err != nil {
@@ -67,7 +67,7 @@ func (manager SessionManager) Join(discord *discordgo.Session, guildId, channelI
 	return sess, nil
 }
 
-func (manager SessionManager) Leave(discord *discordgo.Session, session Session) {
+func (manager *SessionManager) Leave(discord *discordgo.Session, session Session) {
 	session.connection.Stop()
 	session.connection.Disconnect()
 	delete(manager.sessions, session.ChannelId)

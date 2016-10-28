@@ -86,9 +86,9 @@ func AddCommand(ctx framework.Context) {
 			return
 		}
 		if err != nil {
-			ctx.Discord.ChannelMessageEdit(ctx.TextChannel.ID, msg.ID, "An error occured")
+			ctx.Reply("An error occured getting yt song " + id)
 			fmt.Println("Error loading yt song,", err)
-			return
+			continue
 		}
 		sess.Queue.Add(*song)
 		ctx.Discord.ChannelMessageEdit(ctx.TextChannel.ID, msg.ID, "Added `"+song.Title+"` to the song queue.")

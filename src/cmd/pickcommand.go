@@ -44,7 +44,7 @@ func PickCommand(ctx framework.Context) {
 		}
 		if num < 1 || num > rLen {
 			ctx.Reply(fmt.Sprintf(invalid_song_format, num, rLen))
-			continue
+			return
 		}
 		result := ytSession.results[num-1]
 		song, err := loadYTSong(ctx, result.Id)

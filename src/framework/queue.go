@@ -10,6 +10,10 @@ func (queue SongQueue) Get() []Song {
 	return queue.list
 }
 
+func (queue *SongQueue) Set(list []Song) {
+    queue.list = list
+}
+
 func (queue *SongQueue) Add(song Song) {
 	queue.list = append(queue.list, song)
 }
@@ -47,6 +51,10 @@ func (queue *SongQueue) Start(sess *Session, callback func(string)) {
 
 func (queue *SongQueue) Current() *Song {
 	return queue.current
+}
+
+func (queue *SongQueue) Pause() {
+    queue.running = false
 }
 
 func newSongQueue() *SongQueue {

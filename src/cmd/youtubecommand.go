@@ -45,6 +45,10 @@ func YoutubeCommand(ctx framework.Context) {
 		fmt.Println("Error searching youtube,", err)
 		return
 	}
+    if len(results) == 0 {
+        ctx.Reply("No results found for your query `" + query + "`.")
+        return
+    }
 	buffer := bytes.NewBufferString("__Search results__ for `" + query + "`:\n")
 	for index, result := range results {
 		buffer.WriteString(fmt.Sprintf(result_format, index+1, result.Title, result.ChannelTitle,
