@@ -3,51 +3,7 @@ package cmd
 import (
 	"../framework"
 	"fmt"
-	"net/url"
-	"strconv"
-	"strings"
 )
-
-const (
-	TYPE_UNKNOWN    = 0
-	TYPE_YOUTUBE    = 1
-	TYPE_SOUNDCLOUD = 2
-)
-
-type identifyResult struct {
-	t uint8
-	v string
-}
-
-func cont(input, check string) bool {
-	return strings.Contains(input, check)
-}
-
-func identifyInput(input string) *identifyResult {
-	lower := strings.ToLower(input)
-	if cont(lower, "youtube.com") {
-		u, err := url.Parse(input)
-		if err != nil {
-			fmt.Println("oops parsing inp", err)
-			return nil
-		}
-		id := u.Query().Get("v")
-		return &identifyResult{TYPE_YOUTUBE, id}
-	} else if cont(lower, "youtu.be") {
-		ind := strings.Index(input, "be/") + 3
-		return &identifyResult{TYPE_YOUTUBE, input[ind:]}
-	} else {
-		return &identifyResult{TYPE_UNKNOWN, input}
-	}
-}
-
-func loadYTSong(ctx framework.Context, id string) (*framework.Song, error) {
-	result, err := ctx.Youtube.Get(id)
-	if err != nil {
-		return nil, err
-	}
-	return framework.NewSong(result.Media, result.Title, id), nil
-}
 
 func AddCommand(ctx framework.Context) {
 	if len(ctx.Args) == 0 {
@@ -62,37 +18,60 @@ func AddCommand(ctx framework.Context) {
 	}
 	msg := ctx.Reply("Adding songs to queue...")
 	for _, arg := range ctx.Args {
-		identified := identifyInput(arg)
-		if identified == nil {
-			ctx.Reply("Could not identify input `" + arg + "`.")
-			continue
-		}
-		id := identified.v
-		var song *framework.Song
-		var err error
-		switch identified.t {
-		case TYPE_UNKNOWN:
-			// try youtube xd
-			song, err = loadYTSong(ctx, id)
-			break
-		case TYPE_YOUTUBE:
-			song, err = loadYTSong(ctx, id)
-			break
-		case TYPE_SOUNDCLOUD:
-			ctx.Reply("Soundcloud not yet supported.")
-			break
-		default:
-			ctx.Reply(fmt.Sprintf("Invalid type `%d`.", identified.t))
-			return
-		}
-		if err != nil {
-			ctx.Reply("An error occured getting yt song " + id)
-			fmt.Println("Error loading yt song,", err)
-			continue
-		}
-		sess.Queue.Add(*song)
-		ctx.Discord.ChannelMessageEdit(ctx.TextChannel.ID, msg.ID, "Added `"+song.Title+"` to the song queue.")
-	}
-	ctx.Discord.ChannelMessageEdit(ctx.TextChannel.ID, msg.ID, "Added "+strconv.Itoa(len(ctx.Args))+
-		" songs to the queue. Use `music play` to start playing the songs! To see the song queue, use `music queue`.")
+        t, inp, err := ctx.Youtube.Get(arg)
+
+        if err != nil {
+            ctx.Reply("An error occured!")
+            fmt.Println("error getting input,", err)
+            return
+        }
+
+        switch t {
+        case framework.ERROR_TYPE:
+            ctx.Reply("An error occured!")
+            fmt.Println("error type", t)
+            return
+        case framework.VIDEO_TYPE: {
+            video, err := ctx.Youtube.Video(*inp)
+            if err != nil {
+                ctx.Reply("An error occured!")
+                fmt.Println("error getting video1,", err)
+                return
+            }
+            song := framework.NewSong(video.Media, video.Title, arg)
+            sess.Queue.Add(*song)
+            ctx.Discord.ChannelMessageEdit(ctx.TextChannel.ID, msg.ID, "Added `" + song.Title + "` to the song queue." +
+                    " Use `music play` to start playing the songs! To see the song queue, use `music queue`.")
+            break
+        }
+        case framework.PLAYLIST_TYPE: {
+            videos, err := ctx.Youtube.Playlist(*inp)
+            if err != nil {
+                ctx.Reply("An error occured!")
+                fmt.Println("error getting playlist,", err)
+                return
+            }
+            for _, v := range *videos {
+                id := v.Id
+                _, i, err := ctx.Youtube.Get(id)
+                if err != nil {
+                    ctx.Reply("An error occured!")
+                    fmt.Println("error getting video2,", err)
+                    continue
+                }
+                video, err := ctx.Youtube.Video(*i)
+                if err != nil {
+                    ctx.Reply("An error occured!")
+                    fmt.Println("error getting video3,", err)
+                    return
+                }
+                song := framework.NewSong(video.Media, video.Title, arg)
+                sess.Queue.Add(*song)
+            }
+            ctx.Reply("Finished adding songs to the playlist. Use `music play` to start playing the songs! " +
+                    "To see the song queue, use `music queue`.")
+            break
+        }
+        }
+    }
 }
