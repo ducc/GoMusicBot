@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	PREFIX = "music"
+	PREFIX = "!"
 )
 
 var (
@@ -43,7 +43,7 @@ func main() {
 	botId = usr.ID
 	discord.AddHandler(commandHandler)
 	discord.AddHandler(func(discord *discordgo.Session, ready *discordgo.Ready) {
-		discord.UpdateStatus(0, "boyyyy")
+		discord.UpdateStatus(0, "A baby AI")
 		guilds := discord.State.Guilds
 		fmt.Println("Ready with", len(guilds), "guilds.")
 	})
@@ -68,7 +68,7 @@ func commandHandler(discord *discordgo.Session, message *discordgo.MessageCreate
 	if content[:len(PREFIX)] != PREFIX {
 		return
 	}
-	content = content[len(PREFIX)+1:]
+	content = content[len(PREFIX):]
 	if len(content) < 1 {
 		return
 	}

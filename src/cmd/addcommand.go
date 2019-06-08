@@ -22,7 +22,7 @@ func AddCommand(ctx framework.Context) {
 
         if err != nil {
             ctx.Reply("An error occured!")
-            fmt.Println("error getting input,", err)
+            fmt.Println("error getting input, %s", err)
             return
         }
 
