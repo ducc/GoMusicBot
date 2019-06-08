@@ -8,9 +8,9 @@ import (
 	"strings"
 )
 
-const (
-	PREFIX = "!"
-)
+// const (
+// 	PREFIX = "!"
+// )
 
 var (
 	conf       *framework.Config
@@ -18,10 +18,16 @@ var (
 	Sessions   *framework.SessionManager
 	youtube    *framework.Youtube
 	botId      string
+	PREFIX     string
 )
 
-func main() {
+func init() {
 	conf = framework.LoadConfig("config.json")
+	PREFIX = conf.Prefix
+
+}
+
+func main() {
 	CmdHandler = framework.NewCommandHandler()
 	registerCommands()
 	Sessions = framework.NewSessionManager()
