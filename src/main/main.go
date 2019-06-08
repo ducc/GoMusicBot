@@ -45,7 +45,7 @@ func main() {
 	botId = usr.ID
 	discord.AddHandler(commandHandler)
 	discord.AddHandler(func(discord *discordgo.Session, ready *discordgo.Ready) {
-		discord.UpdateStatus(0, "A baby AI")
+		discord.UpdateStatus(0, conf.DefaultStatus)
 		guilds := discord.State.Guilds
 		fmt.Println("Ready with", len(guilds), "guilds.")
 	})
