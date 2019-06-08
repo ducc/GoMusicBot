@@ -8,10 +8,6 @@ import (
 	"strings"
 )
 
-// const (
-// 	PREFIX = "!"
-// )
-
 var (
 	conf       *framework.Config
 	CmdHandler *framework.CommandHandler
