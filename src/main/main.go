@@ -8,20 +8,22 @@ import (
 	"strings"
 )
 
-const (
-	PREFIX = "music"
-)
-
 var (
 	conf       *framework.Config
 	CmdHandler *framework.CommandHandler
 	Sessions   *framework.SessionManager
 	youtube    *framework.Youtube
 	botId      string
+	PREFIX     string
 )
 
-func main() {
+func init() {
 	conf = framework.LoadConfig("config.json")
+	PREFIX = conf.Prefix
+
+}
+
+func main() {
 	CmdHandler = framework.NewCommandHandler()
 	registerCommands()
 	Sessions = framework.NewSessionManager()
@@ -43,7 +45,7 @@ func main() {
 	botId = usr.ID
 	discord.AddHandler(commandHandler)
 	discord.AddHandler(func(discord *discordgo.Session, ready *discordgo.Ready) {
-		discord.UpdateStatus(0, "boyyyy")
+		discord.UpdateStatus(0, conf.DefaultStatus)
 		guilds := discord.State.Guilds
 		fmt.Println("Ready with", len(guilds), "guilds.")
 	})
@@ -68,7 +70,7 @@ func commandHandler(discord *discordgo.Session, message *discordgo.MessageCreate
 	if content[:len(PREFIX)] != PREFIX {
 		return
 	}
-	content = content[len(PREFIX)+1:]
+	content = content[len(PREFIX):]
 	if len(content) < 1 {
 		return
 	}
@@ -95,22 +97,24 @@ func commandHandler(discord *discordgo.Session, message *discordgo.MessageCreate
 }
 
 func registerCommands() {
-	CmdHandler.Register("help", cmd.HelpCommand)
-	CmdHandler.Register("admin", cmd.AdminCommand)
-	CmdHandler.Register("join", cmd.JoinCommand)
-	CmdHandler.Register("leave", cmd.LeaveCommand)
-	CmdHandler.Register("play", cmd.PlayCommand)
-	CmdHandler.Register("stop", cmd.StopCommand)
-	CmdHandler.Register("info", cmd.InfoCommand)
-	CmdHandler.Register("add", cmd.AddCommand)
-	CmdHandler.Register("skip", cmd.SkipCommand)
-	CmdHandler.Register("queue", cmd.QueueCommand)
-	CmdHandler.Register("eval", cmd.EvalCommand)
-	CmdHandler.Register("debug", cmd.DebugCommand)
-	CmdHandler.Register("clear", cmd.ClearCommand)
-	CmdHandler.Register("current", cmd.CurrentCommand)
-	CmdHandler.Register("youtube", cmd.YoutubeCommand)
-    CmdHandler.Register("shuffle", cmd.ShuffleCommand)
-    CmdHandler.Register("pausequeue", cmd.PauseCommand)
-    CmdHandler.Register("pick", cmd.PickCommand)
+	// ??? means I haven't dug in
+	// TODO: Consistant order?
+	CmdHandler.Register("help", cmd.HelpCommand, "Gives you this help message!")
+	CmdHandler.Register("admin", cmd.AdminCommand, "???")
+	CmdHandler.Register("join", cmd.JoinCommand, "Join a voice channel !join attic")
+	CmdHandler.Register("leave", cmd.LeaveCommand, "Leaves current voice channel")
+	CmdHandler.Register("play", cmd.PlayCommand, "Plays whats in the queue")
+	CmdHandler.Register("stop", cmd.StopCommand, "Stops the music")
+	CmdHandler.Register("info", cmd.InfoCommand, "???")
+	CmdHandler.Register("add", cmd.AddCommand, "Add a song to the queue !add <youtube-link>")
+	CmdHandler.Register("skip", cmd.SkipCommand, "Skip")
+	CmdHandler.Register("queue", cmd.QueueCommand, "Print queue???")
+	CmdHandler.Register("eval", cmd.EvalCommand, "???")
+	CmdHandler.Register("debug", cmd.DebugCommand, "???")
+	CmdHandler.Register("clear", cmd.ClearCommand, "empty queue???")
+	CmdHandler.Register("current", cmd.CurrentCommand, "Name current song???")
+	CmdHandler.Register("youtube", cmd.YoutubeCommand, "???")
+    CmdHandler.Register("shuffle", cmd.ShuffleCommand, "Shuffle queue???")
+    CmdHandler.Register("pausequeue", cmd.PauseCommand, "Pause song in place???")
+    CmdHandler.Register("pick", cmd.PickCommand, "???")
 }
